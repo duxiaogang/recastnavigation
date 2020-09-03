@@ -61,8 +61,28 @@ enum SamplePolyFlags
 
 class SampleDebugDraw : public DebugDrawGL
 {
+	FILE* logFp;
+
 public:
+	SampleDebugDraw() : logFp(nullptr) {}
+
 	virtual unsigned int areaToCol(unsigned int area);
+
+	bool openLog(const char* logFile)
+	{
+		closeLog();
+		logFp = fopen(logFile, "wx");
+		return logFp;
+	}
+	void closeLog()
+	{
+		if (logFp) fclose(logFp);
+	}
+	virtual void log(const char *str) override
+	{
+		if (!logFp) return;
+		fprintf(logFp, str);
+	}
 };
 
 enum SamplePartitionType

@@ -18,6 +18,7 @@
 
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <cstdio>
 #include "DebugDraw.h"
 #include "RecastDebugDraw.h"
 #include "Recast.h"
@@ -966,6 +967,9 @@ void duDebugDrawPolyMeshDetail(duDebugDraw* dd, const struct rcPolyMeshDetail& d
 {
 	if (!dd) return;
 
+	FILE* fp = nullptr;
+	//fp = fopen("d:\\edge.txt", "wx");
+
 	dd->begin(DU_DRAW_TRIS);
 	
 	for (int i = 0; i < dmesh.nmeshes; ++i)
@@ -1043,6 +1047,11 @@ void duDebugDrawPolyMeshDetail(duDebugDraw* dd, const struct rcPolyMeshDetail& d
 					// Ext edge
 					dd->vertex(&verts[t[kp]*3], cole);
 					dd->vertex(&verts[t[k]*3], cole);
+					if (fp)
+					{
+						fprintf(fp, "%0.2f %0.2f %0.2f %0.2f %0.2f %0.2f\n",
+							verts[t[kp] * 3], verts[t[kp] * 3 + 1], verts[t[kp] * 3 + 2], verts[t[k] * 3], verts[t[k] * 3 + 1], verts[t[k] * 3 + 2]);
+					}
 				}
 			}
 		}
@@ -1061,4 +1070,5 @@ void duDebugDrawPolyMeshDetail(duDebugDraw* dd, const struct rcPolyMeshDetail& d
 			dd->vertex(&verts[j*3], colv);
 	}
 	dd->end();
+	if (fp) fclose(fp);
 }

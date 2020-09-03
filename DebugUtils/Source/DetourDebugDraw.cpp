@@ -21,6 +21,7 @@
 #include "DetourNavMesh.h"
 #include "DetourCommon.h"
 #include "DetourNode.h"
+#include <cstdio>
 
 
 static float distancePtLine2d(const float* pt, const float* p, const float* q)
@@ -109,6 +110,18 @@ static void drawPolyBoundaries(duDebugDraw* dd, const dtMeshTile* tile,
 					{
 						dd->vertex(tv[n], c);
 						dd->vertex(tv[m], c);
+						{
+							char buf[1024];
+							snprintf(buf, sizeof(buf) - 1, "%0.2f %0.2f %0.2f %0.2f %0.2f %0.2f\n",
+								tv[n][0],
+								tv[n][1],
+								tv[n][2],
+								tv[m][0],
+								tv[m][1],
+								tv[m][2]
+							);
+							dd->log(buf);
+						}
 					}
 				}
 			}
@@ -127,6 +140,8 @@ static void drawMeshTile(duDebugDraw* dd, const dtNavMesh& mesh, const dtNavMesh
 	
 	dd->depthMask(false);
 
+#if 1
+	//蓝底(三角形面)
 	dd->begin(DU_DRAW_TRIS);
 	for (int i = 0; i < tile->header->polyCount; ++i)
 	{
@@ -160,6 +175,7 @@ static void drawMeshTile(duDebugDraw* dd, const dtNavMesh& mesh, const dtNavMesh
 		}
 	}
 	dd->end();
+#endif
 	
 	// Draw inter poly boundaries
 	drawPolyBoundaries(dd, tile, duRGBA(0,48,64,32), 1.5f, true);
@@ -222,6 +238,8 @@ static void drawMeshTile(duDebugDraw* dd, const dtNavMesh& mesh, const dtNavMesh
 		dd->end();
 	}
 	
+#if 1
+	//顶点
 	const unsigned int vcol = duRGBA(0,0,0,196);
 	dd->begin(DU_DRAW_POINTS, 3.0f);
 	for (int i = 0; i < tile->header->vertCount; ++i)
@@ -230,6 +248,7 @@ static void drawMeshTile(duDebugDraw* dd, const dtNavMesh& mesh, const dtNavMesh
 		dd->vertex(v[0], v[1], v[2], vcol);
 	}
 	dd->end();
+#endif
 
 	dd->depthMask(true);
 }

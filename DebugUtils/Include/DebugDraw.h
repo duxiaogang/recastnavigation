@@ -69,6 +69,8 @@ struct duDebugDraw
 
 	/// Compute a color for given area.
 	virtual unsigned int areaToCol(unsigned int area);
+
+	virtual void log(const char* str) {}
 };
 
 inline unsigned int duRGBA(int r, int g, int b, int a)
