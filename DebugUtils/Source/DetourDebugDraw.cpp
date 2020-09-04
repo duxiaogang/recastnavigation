@@ -110,6 +110,7 @@ static void drawPolyBoundaries(duDebugDraw* dd, const dtMeshTile* tile,
 					{
 						dd->vertex(tv[n], c);
 						dd->vertex(tv[m], c);
+#if 0
 						{
 							char buf[1024];
 							snprintf(buf, sizeof(buf) - 1, "%0.2f %0.2f %0.2f %0.2f %0.2f %0.2f\n",
@@ -122,6 +123,7 @@ static void drawPolyBoundaries(duDebugDraw* dd, const dtMeshTile* tile,
 							);
 							dd->log(buf);
 						}
+#endif
 					}
 				}
 			}

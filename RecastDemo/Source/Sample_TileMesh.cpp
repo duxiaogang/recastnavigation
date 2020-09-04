@@ -47,6 +47,8 @@
 #	define snprintf _snprintf
 #endif
 
+static void exportTileEdges(const dtNavMesh& mesh, const dtMeshTile* tile, FILE* fp);
+static void exportEdges(const dtNavMesh& mesh);
 
 inline unsigned int nextPow2(unsigned int v)
 {
@@ -285,6 +287,11 @@ void Sample_TileMesh::handleSettings()
 		m_navQuery->init(m_navMesh, 2048);
 	}
 
+	if (imguiButton("Export Edges"))
+	{
+		exportEdges(*m_navMesh);
+	}
+
 	imguiUnindent();
 	imguiUnindent();
 	
@@ -465,9 +472,9 @@ void Sample_TileMesh::handleRender()
 	{
 		if (m_drawMode != DRAWMODE_NAVMESH_INVIS)
 		{
-			m_dd.openLog("d:\\edges.txt");
+			//m_dd.openLog("d:\\edges.txt");
 			duDebugDrawNavMeshWithClosedList(&m_dd, *m_navMesh, *m_navQuery, m_navMeshDrawFlags);
-			m_dd.closeLog();
+			//m_dd.closeLog();
 		}
 		if (m_drawMode == DRAWMODE_NAVMESH_BVTREE)
 			duDebugDrawNavMeshBVTree(&m_dd, *m_navMesh);
@@ -1174,4 +1181,36 @@ unsigned char* Sample_TileMesh::buildTileMesh(const int tx, const int ty, const 
 
 	dataSize = navDataSize;
 	return navData;
+}
+
+static void exportEdges(const dtNavMesh& mesh)
+{
+	FILE* fp = fopen("d:\\edges.txt", "w");
+	if (!fp) return;
+
+	for (int i = 0; i < mesh.getMaxTiles(); ++i)
+	{
+		const dtMeshTile* tile = mesh.getTile(i);
+		if (!tile->header) continue;
+		exportTileEdges(mesh, tile, fp);
+	}
+
+	fclose(fp);
+}
+
+static void exportTileEdges(const dtNavMesh& mesh, const dtMeshTile* tile, FILE* fp)
+{
+	for (int i = 0; i < tile->header->polyCount; ++i)
+	{
+		const dtPoly* p = &tile->polys[i];
+		if (p->getType() == DT_POLYTYPE_OFFMESH_CONNECTION) continue;
+		for (int j = 0, nj = (int)p->vertCount; j < nj; ++j)
+		{
+			const float* v0 = &tile->verts[p->verts[j] * 3];
+			const float* v1 = &tile->verts[p->verts[(j + 1) % nj] * 3];
+			//char buf[1024];
+			//snprintf(buf, sizeof(buf) - 1, "%0.2f %0.2f %0.2f %0.2f %0.2f %0.2f\n", v0[0], v0[1], v0[2], v1[0], v1[1], v1[2]);
+			fprintf(fp, "%0.2f %0.2f %0.2f %0.2f %0.2f %0.2f\n", v0[0], v0[1], v0[2], v1[0], v1[1], v1[2]);
+		}
+	}
 }
